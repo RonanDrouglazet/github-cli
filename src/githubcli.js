@@ -1,16 +1,16 @@
 var cp = require("child_process");
 var debug = false;
 
-exports.clone = function(url, done) {
-    exports.exec("../repos/", "git clone " + url, done);
+exports.clone = function(uri, url, done) {
+    exports.exec(uri, "git clone " + url, done);
 };
 
-exports.checkout = function(repoName, branchName, done, cleanAlreadyDone) {
-    exports.exec("../repos/" + repoName, "git fetch origin && git checkout " + branchName, function(err, stdout, stderr) {
+exports.checkout = function(uri, branchName, done, cleanAlreadyDone) {
+    exports.exec(uri, "git fetch origin && git checkout " + branchName, function(err, stdout, stderr) {
         if (err && !cleanAlreadyDone) {
-            exports.clean(repoName,
-                exports.reset.bind(this, repoName, null,
-                    exports.checkout.bind(this, repoName, branchName, done, true)
+            exports.clean(uri,
+                exports.reset.bind(this, uri, null,
+                    exports.checkout.bind(this, uri, branchName, done, true)
                 )
             );
         } else {
@@ -19,22 +19,22 @@ exports.checkout = function(repoName, branchName, done, cleanAlreadyDone) {
     });
 };
 
-exports.recover = function(repo, branchName, pushToken, done) {
+exports.recover = function(uri, repo, branchName, pushToken, done) {
     repoUrl = repo.url.replace("https://", "https://" + pushToken + "@");
-    exports.exec("../repos/" + repo.name, "git reset --hard " + branchName + "_backup" +
+    exports.exec(uri, "git reset --hard " + branchName + "_backup" +
         " && git push -f " + repoUrl + " " + branchName, done);
 };
 
-exports.reset = function(repoName, branchName, done) {
-    exports.exec("../repos/" + repoName, "git reset --hard" + (branchName ? (" origin/" + branchName) : ""), done);
+exports.reset = function(uri, branchName, done) {
+    exports.exec(uri, "git reset --hard" + (branchName ? (" origin/" + branchName) : ""), done);
 };
 
-exports.pull = function(repoName, done) {
-    exports.exec("../repos/" + repoName, "git pull --rebase", done);
+exports.pull = function(uri, done) {
+    exports.exec(uri, "git pull --rebase", done);
 };
 
-exports.rebase = function(repoName, rebaseOrigin, done) {
-    exports.exec("../repos/" + repoName, "git rebase origin/" + rebaseOrigin, function(err, stdout, stderr) {
+exports.rebase = function(uri, rebaseOrigin, done) {
+    exports.exec(uri, "git rebase origin/" + rebaseOrigin, function(err, stdout, stderr) {
         if (stdout.endsWith("is up to date.\n")) {
             done(err, true);
         } else {
@@ -43,38 +43,38 @@ exports.rebase = function(repoName, rebaseOrigin, done) {
     });
 };
 
-exports.merge = function(repoName, branchToMerge, done, msg) {
-    exports.exec("../repos/" + repoName, "git merge --no-ff origin/" + branchToMerge + (msg ? (" -m '" + msg + "'") : ""), function(err, stdout, stderr) {
+exports.merge = function(uri, branchToMerge, done, msg) {
+    exports.exec(uri, "git merge --no-ff origin/" + branchToMerge + (msg ? (" -m '" + msg + "'") : ""), function(err, stdout, stderr) {
         done(err, stdout === "Already up-to-date.\n");
     });
 };
 
-exports.branch = function(repoName, branchName, done) {
-    exports.exec("../repos/" + repoName, "git branch -f " + branchName, done);
+exports.branch = function(uri, branchName, done) {
+    exports.exec(uri, "git branch -f " + branchName, done);
 };
 
-exports.push = function(pushToken, repoName, repoUrl, branchName, done, force) {
+exports.push = function(pushToken, uri, repoUrl, branchName, done, force) {
     repoUrl = repoUrl.replace("https://", "https://" + pushToken + "@");
-    exports.exec("../repos/" + repoName, "git push " + (force ? "-f " : "") + repoUrl + " " + branchName, done);
+    exports.exec(uri, "git push " + (force ? "-f " : "") + repoUrl + " " + branchName, done);
 };
 
-exports.abortRebase = function(repoName, done) {
-    exports.exec("../repos/" + repoName, "git rebase --abort", done);
+exports.abortRebase = function(uri, done) {
+    exports.exec(uri, "git rebase --abort", done);
 };
 
-exports.clean = function(repoName, done) {
-    exports.exec("../repos/" + repoName, "git clean -f -d -x", done);
+exports.clean = function(uri, done) {
+    exports.exec(uri, "git clean -f -d -x", done);
 };
 
-exports.getMissingCommits = function(repoName, branchName, rebaseOrigin, done) {
-    exports.exec("../repos/" + repoName, "git cherry origin/"+ branchName + " origin/" + rebaseOrigin, function(err, stdout, stderr) {
+exports.getMissingCommits = function(uri, branchName, rebaseOrigin, done) {
+    exports.exec(uri, "git cherry origin/"+ branchName + " origin/" + rebaseOrigin, function(err, stdout, stderr) {
         var match = stdout.match(/\+/g);
         done(err, match ? match.length : 0);
     });
 };
 
-exports.setGrebaseAuthor = function(repoName, done) {
-    exports.exec("../repos/" + repoName, "git config user.name 'GRebase-' && git config user.email 'grebase.2014@gmail.com'", done);
+exports.setGrebaseAuthor = function(uri, done) {
+    exports.exec(uri, "git config user.name 'GRebase-' && git config user.email 'grebase.2014@gmail.com'", done);
 };
 
 exports.exec = function(localPath, command, done) {
