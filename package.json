@@ -1,0 +1,24 @@
+{
+  "name": "github-cli",
+  "version": "1.0.0",
+  "description": "little interface for github cli with nodejs",
+  "main": "src/githubcli.js",
+  "scripts": {
+    "test": "node src/githubcli.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RonanDrouglazet/github-cli.git"
+  },
+  "keywords": [
+    "git",
+    "github",
+    "cli"
+  ],
+  "author": "RonanDrouglazet",
+  "license": "GPL",
+  "bugs": {
+    "url": "https://github.com/RonanDrouglazet/github-cli/issues"
+  },
+  "homepage": "https://github.com/RonanDrouglazet/github-cli#readme"
+}
