@@ -53,6 +53,14 @@ exports.branch = function(uri, branchName, done) {
     exports.exec(uri, "git branch -f " + branchName, done);
 };
 
+exports.add = function(uri, path, done) {
+    exports.exec(uri, "git add " + path, done);
+};
+
+exports.commit = function(uri, message, done) {
+    exports.exec(uri, "git commit -am '" + message + "'", done);
+};
+
 exports.push = function(pushToken, uri, repoUrl, branchName, done, force) {
     repoUrl = repoUrl.replace("https://", "https://" + pushToken + "@");
     exports.exec(uri, "git push " + (force ? "-f " : "") + repoUrl + " " + branchName, done);
@@ -78,7 +86,7 @@ exports.setGrebaseAuthor = function(uri, done) {
 };
 
 exports.exec = function(localPath, command, done) {
-    cp.exec("cd " + __dirname + "/" + localPath + " && " + command, function(error, stdout, stderr) {
+    cp.exec("cd " + localPath + " && " + command, function(error, stdout, stderr) {
         if (debug) {
             console.log("#########################");
             console.log("Exec command: ", command);
