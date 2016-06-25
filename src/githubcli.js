@@ -26,7 +26,7 @@ exports.recover = function(uri, repo, branchName, pushToken, done) {
 };
 
 exports.reset = function(uri, branchName, done) {
-    exports.exec(uri, "git reset --hard" + (branchName ? (" origin/" + branchName) : ""), done);
+    exports.exec(uri, "git fetch origin && git reset --hard" + (branchName ? (" origin/" + branchName) : ""), done);
 };
 
 exports.pull = function(uri, done) {
