@@ -29,6 +29,10 @@ exports.reset = function(uri, branchName, done) {
     exports.exec(uri, "git fetch origin && git reset --hard" + (branchName ? (" origin/" + branchName) : ""), done);
 };
 
+exports.resetsha = function(uri, sha, done) {
+    exports.exec(uri, "git fetch origin && git reset --hard " + sha, done);
+};
+
 exports.pull = function(uri, done) {
     exports.exec(uri, "git pull --rebase", done);
 };
